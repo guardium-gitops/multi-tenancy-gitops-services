@@ -2,7 +2,7 @@
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
-  name: {{ .Value.catalogs.ibmoperators.name }}
+  name: {{ .Values.catalogs.ibmoperators.name }}
   namespace: openshift-marketplace
   annotations:
     argocd.argoproj.io/sync-wave: {{ .Values.syncWave | default "-10" | quote }}
