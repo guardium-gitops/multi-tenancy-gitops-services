@@ -1,0 +1,9 @@
+{{- if .Values.operatorGroup -}}
+apiVersion: operators.coreos.com/v1alpha2
+kind: OperatorGroup
+metadata:
+  name: {{ include "subscription.name" .}}-operatorgroup
+spec:
+  targetNamespaces:
+  - {{ .Release.Namespace }}
+{{- end -}}

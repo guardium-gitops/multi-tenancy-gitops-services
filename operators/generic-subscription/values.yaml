@@ -8,3 +8,4 @@
 #   env:
 #     - name: REGISTRY_SECRET
 #       value: ibm-entitlement-key
+# operatorGroup: true

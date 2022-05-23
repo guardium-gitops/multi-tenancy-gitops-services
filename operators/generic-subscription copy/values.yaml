@@ -1,9 +1,0 @@
-name: ibm-cloud-databases-redis-operator-subscription
-channel: v1.3
-operatorName: ibm-cloud-databases-redis-operator
-operatorSource: ibm-cloud-databases-redis-operator-catalog
-operatorSourceNamespace: openshift-marketplace
-config:
-  env:
-    - name: REGISTRY_SECRET
-      value: ibm-entitlement-key
