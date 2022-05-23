@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: {{ include "subscription.name" . }}
+spec:
+  channel: {{ include "subscription.channel" . }}
+  installPlanApproval: {{ include "subscription.installPlanApproval" . }}
+  name: {{ include "subscription.operatorName" . }}
+  source: {{ include "subscription.operatorSource" . }}
+  sourceNamespace: {{ include "subscription.operatorSourceNamespace" . }}
+  {{- include "subscription.config" . | nindent 2 -}}
