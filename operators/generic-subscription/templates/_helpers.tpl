@@ -35,3 +35,7 @@ config:
 {{- define "subscription.operatorSourceNamespace" -}}
 {{- default "openshift-marketplace" .Values.installPlanApproval -}}
 {{- end -}}
+
+{{- define "subscription.namespace" -}}
+{{- default "openshift-operators" .Values.namespace -}}
+{{- end -}}
