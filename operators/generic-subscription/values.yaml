@@ -9,3 +9,4 @@
 #     - name: REGISTRY_SECRET
 #       value: ibm-entitlement-key
 # operatorGroup: true
+# startingCSV: testing-csv-1.2.3

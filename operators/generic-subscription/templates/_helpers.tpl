@@ -3,14 +3,6 @@
 {{- $name -}}
 {{- end -}}
 
-{{- define "subscription.config" -}}
-  {{- if .Values.config -}}
-
-config:
-  {{- toYaml .Values.config | nindent 2 -}}
-  {{- end -}}
-
-{{- end -}}
 
 {{- define "subscription.channel" -}}
 {{- $channel := required "You need to provide the channel of your subscription" .Values.channel -}}
@@ -38,4 +30,19 @@ config:
 
 {{- define "subscription.namespace" -}}
 {{- default "openshift-operators" .Values.namespace -}}
+{{- end -}}
+
+{{- define "subscription.config" -}}
+  {{- if .Values.config -}}
+
+config:
+  {{- toYaml .Values.config | nindent 2 -}}
+  {{- end -}}
+
+{{- end -}}
+
+{{- define "subscription.startingCSV" -}}
+  {{- if .Values.startingCSV -}}
+  startingCSV: {{ .Values.startingCSV }}
+  {{- end -}}
 {{- end -}}

@@ -9,3 +9,4 @@ spec:
   source: {{ include "subscription.operatorSource" . }}
   sourceNamespace: {{ include "subscription.operatorSourceNamespace" . }}
   {{- include "subscription.config" . | nindent 2 -}}
+  {{- include "subscription.startingCSV" . | nindent 2 -}}
