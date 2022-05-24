@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/instance: ibm-guardium-insights-operator
+    app.kubernetes.io/managed-by: ibm-guardium-insights-operator
+    app.kubernetes.io/name: ibm-guardium-insights-operator
+    control-plane: controller-manager
+  name: guardiuminsights-controller-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  template:
+    metadata:
+      annotations:
+        cloudpakId: efa8389f115c42f187eddd8f927926b4
+        cloudpakMetric: RESOURCE_UNIT
+        cloudpakName: IBM Cloud Pak for Security (Gen 3)
+        productChargedContainers: All
+        productCloudpakRatio: "1:10"
+        productID: cce52f32de0645ffa437f4775e4dcf72
+        productMetric: VIRTUAL_PROCESSOR_CORE
+        productName: IBM Security Guardium Insights for IBM Cloud Pak for Security
+          (Gen 3)
+      labels:
+        app.kubernetes.io/instance: ibm-guardium-insights-operator
+        app.kubernetes.io/managed-by: ibm-guardium-insights-operator
+        app.kubernetes.io/name: ibm-guardium-insights-operator
+        control-plane: controller-manager
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+      containers:
+      - args:
+        - --enable-leader-election
+        - --leader-election-id=gi-operator-lock
+        env:
+        - name: WATCH_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: ANSIBLE_GATHERING
+          value: explicit
+        - name: ANSIBLE_DEBUG_LOGS
+          value: "True"
+        image: cp.icr.io/cp/ibm-guardium-insights/ibm-guardium-insights-operator@sha256:5323fbfa614cc7bf814d1b67acd2284f9d22c028720707f18a19a33d0aa07606
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 6789
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        name: manager
+        readinessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - echo hi
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: "1"
+            memory: 400Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+      imagePullSecrets:
+      - name: ibm-entitlement-key
+      serviceAccount: guardiuminsights-manager-sa
+      terminationGracePeriodSeconds: 10

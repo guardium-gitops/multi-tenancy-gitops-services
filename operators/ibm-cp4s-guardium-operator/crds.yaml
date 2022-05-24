@@ -1,0 +1,492 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: backups.gi.ds.isc.ibm.com
+spec:
+  group: gi.ds.isc.ibm.com
+  names:
+    kind: Backup
+    listKind: BackupList
+    plural: backups
+    singular: backup
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: Backup is the Schema for the backups API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: Spec defines the desired state of Guardium Insights Backup
+            properties:
+              gi-backup:
+                properties:
+                  insightsEnv:
+                    description: Contains all the environment variables to be passed
+                      in to the backup process
+                    properties:
+                      FREQUENCY_FULL_BACKUP_IN_DAYS:
+                        description: How frequent (in days) the full backup should
+                          be. (Default 7)
+                        type: integer
+                      FREQUENCY_FULL_BACKUP_IN_INC_COUNT:
+                        description: After X times of DB2 incremental backup, the
+                          next round of job will perform a system full backup. (Default
+                          6)
+                        type: integer
+                      RESUME_FULL_BACKUP_ON_FAILURE:
+                        description: Resume the full backup process from where it
+                          failed in previous job. (Default true)
+                        type: boolean
+                      RETENTION_FULL_BACKUP_IN_DAYS:
+                        description: How many days to keep the full backups. (Default
+                          0)
+                        type: integer
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                  persistentVolumesClaims:
+                    description: Persistent Volume Claims to be created
+                    properties:
+                      backup:
+                        properties:
+                          name:
+                            description: Persistent Volume Claim name
+                            pattern: null
+                            type: string
+                          selector:
+                            description: (Optional) A label query over volumes to
+                              consider for binding.
+                            type: string
+                          size:
+                            description: Amount of capacity to request
+                            type: string
+                          storageClassName:
+                            description: StorageClass to use
+                            type: string
+                          volumeName:
+                            description: (Optional) VolumeName is the binding reference
+                              to the PersistentVolume backing this claim.
+                            type: string
+                        required:
+                        - size
+                        - storageClassName
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                  schedule:
+                    description: Cron frequency of the full and incremental backups
+                    pattern: ^(\d+|\*)(/\d+)?(\s+(\d+|\*)(/\d+)?){4}$
+                    type: string
+                required:
+                - schedule
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              targetGIInstance:
+                description: The Custom Resource name for the target Guardium Insights.
+                type: string
+            required:
+            - targetGIInstance
+            - gi-backup
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+          status:
+            description: Status defines the observed state of Backup
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: guardiuminsights.gi.ds.isc.ibm.com
+spec:
+  group: gi.ds.isc.ibm.com
+  names:
+    kind: GuardiumInsights
+    listKind: GuardiumInsightsList
+    plural: guardiuminsights
+    singular: guardiuminsights
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - description: Status type
+      jsonPath: .status.conditions[?(@.status=="True")].type
+      name: Type
+      type: string
+    - description: Current Status of GuardiumInsights Custom Resource
+      jsonPath: .status.conditions[?(@.status=="True")].status
+      name: Status
+      type: string
+    - description: Reason of GuardiumInsights Custom Resource
+      jsonPath: .status.conditions[?(@.status=="True")].reason
+      name: Reason
+      type: string
+    - description: Status description for GuardiumInsights Custom Resource
+      jsonPath: .status.conditions[?(@.status=="True")].message
+      name: Message
+      type: string
+    - description: Requested Version for GuardiumInsights Custom Resource
+      jsonPath: .status.versions.desiredVersion
+      name: Desired_Version
+      type: string
+    - description: Current Installed Version for GuardiumInsights Custom Resource
+      jsonPath: .status.versions.reconciled
+      name: Installed_Version
+      type: string
+    name: v1
+    schema:
+      openAPIV3Schema:
+        description: GuardiumInsights is the Schema for the guardiuminsights API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: Spec defines the desired state of GuardiumInsights
+            properties:
+              guardiumInsightsGlobal:
+                properties:
+                  affinity:
+                    description: Default affinity to use. This is overridden if specified
+                      per microservice.
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                  fsGroupGid:
+                    description: Default fsGroupGid to use. This should be the id
+                      used to access the storageClasses.
+                    type: integer
+                  image:
+                    properties:
+                      insightsPullSecret:
+                        description: The secret containing credentials to pull images.
+                        type: string
+                      repository:
+                        description: The docker repository (such as cp.icr.io/cp/ibm-guardium-insights).
+                        type: string
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                  insights:
+                    properties:
+                      ics:
+                        properties:
+                          namespace:
+                            description: The namespace where IBM Common Services resides
+                              (default is ibm-common-service).
+                            type: string
+                          registry:
+                            description: The OperandRegistry for IBM Common Services
+                              (default is common-service).
+                            type: string
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
+                      ingress:
+                        properties:
+                          domainName:
+                            description: The base domain of the Openshift Cluster
+                              (used for dynamic route creation).
+                            type: string
+                          hostName:
+                            description: The URL used to access the Guardium Insights
+                              user interface.
+                            type: string
+                        required:
+                        - hostName
+                        - domainName
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
+                    required:
+                    - ingress
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                  issuer:
+                    description: Issuer object name used for internal pod to pod TLS.
+                    type: string
+                  storageClassName:
+                    description: Default storage class to use, must be ReadWriteMany.
+                      This is overridden if specified per microservice.
+                    type: string
+                required:
+                - insights
+                - storageClassName
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              license:
+                properties:
+                  accept:
+                    description: Must be set to true to accept the licenseType.
+                    type: boolean
+                  licenseType:
+                    description: Must be set to a valid license type which can be
+                      found in the README.md file.
+                    type: string
+                required:
+                - accept
+                - licenseType
+                type: object
+              version:
+                description: Version of Guardium Insights.
+                type: string
+            required:
+            - version
+            - license
+            - guardiumInsightsGlobal
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+          status:
+            description: Status defines the observed state of GuardiumInsights
+            properties:
+              versions:
+                properties:
+                  desiredVersion:
+                    type: string
+                  reconciled:
+                    type: string
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        type: object
+        x-kubernetes-preserve-unknown-fields: true
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: restores.gi.ds.isc.ibm.com
+spec:
+  group: gi.ds.isc.ibm.com
+  names:
+    kind: Restore
+    listKind: RestoreList
+    plural: restores
+    singular: restore
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: Restore is the Schema for the restores API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: Spec defines the desired state of Guardium Insights Restore
+            properties:
+              gi-restore:
+                properties:
+                  volumes:
+                    description: Volumes to be mounted
+                    properties:
+                      restore:
+                        properties:
+                          sourceName:
+                            description: Persistent Volume Claim name
+                            type: string
+                        required:
+                        - sourceName
+                        type: object
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                required: null
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              targetGIInstance:
+                description: The Custom Resource name for the target Guardium Insights.
+                type: string
+            required:
+            - targetGIInstance
+            - gi-restore
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+          status:
+            description: Status defines the observed state of Restore
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: tenantgucs.gi.ds.isc.ibm.com
+spec:
+  group: gi.ds.isc.ibm.com
+  names:
+    kind: TenantGUC
+    listKind: TenantGUCList
+    plural: tenantgucs
+    singular: tenantguc
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: TenantGUC is the Schema for the tenantguc API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: Spec defines the desired state of TenantGUC
+            properties:
+              universal-connector:
+                properties:
+                  autoScale:
+                    properties:
+                      enabled:
+                        type: boolean
+                      maxReplicas:
+                        type: integer
+                      minReplicas:
+                        type: integer
+                      threshold:
+                        type: integer
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                  insightsEnv:
+                    properties:
+                      MINI_SNIF_ENDPOINT:
+                        type: string
+                      MINI_SNIF_HOSTNAME:
+                        type: string
+                      MINI_SNIF_PORT:
+                        type: integer
+                      MINI_SNIF_SSL_ENABLED:
+                        type: boolean
+                      TENANT_ID:
+                        type: string
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                  route:
+                    properties:
+                      hostName:
+                        type: string
+                      targetPort:
+                        type: integer
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              version:
+                description: Version of Guardium Insights.
+                type: string
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+          status:
+            description: Status defines the observed state of TenantGUC
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: tenantminisnifs.gi.ds.isc.ibm.com
+spec:
+  group: gi.ds.isc.ibm.com
+  names:
+    kind: TenantMinisnif
+    listKind: TenantMinisnifList
+    plural: tenantminisnifs
+    singular: tenantminisnif
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: TenantMinisnif is the Schema for the tenantminisnif API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: Spec defines the desired state of TenantMinisnif
+            properties:
+              mini-snif:
+                properties:
+                  insightsEnv:
+                    properties:
+                      TENANT_ID:
+                        type: string
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              version:
+                description: Version of Guardium Insights.
+                type: string
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+          status:
+            description: Status defines the observed state of TenantMinisnif
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

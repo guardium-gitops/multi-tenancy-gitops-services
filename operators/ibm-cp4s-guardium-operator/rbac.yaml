@@ -1,0 +1,349 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: guardiuminsights-manager-sa
+  # namespace: REPLACE_NAMESPACE
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/instance: ibm-guardium-insights-operator
+    app.kubernetes.io/managed-by: ibm-guardium-insights-operator
+    app.kubernetes.io/name: ibm-guardium-insights-operator
+  name: guardiuminsights-leader-election-role
+  # namespace: REPLACE_NAMESPACE
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: guardiuminsights-manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  - pods
+  - pods/exec
+  - pods/log
+  - persistentvolumeclaims
+  - events
+  - services
+  - configmaps
+  - serviceaccounts
+  - events
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - daemonsets
+  - replicasets
+  - statefulsets
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs
+  - jobs
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - route.openshift.io
+  resources:
+  - routes
+  - routes/custom-host
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - gi.ds.isc.ibm.com
+  resources:
+  - guardiuminsights
+  - guardiuminsights/status
+  - guardiuminsights/finalizers
+  - tenantgucs
+  - tenantgucs/status
+  - tenantgucs/finalizers
+  - tenantminisnifs
+  - tenantminisnifs/status
+  - tenantminisnifs/finalizers
+  - backups
+  - backups/status
+  - backups/finalizers
+  - restores
+  - restores/status
+  - restores/finalizers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - gi.ds.isc.ibm.com.ibm.com
+  resources:
+  - backups
+  - backups/status
+  - backups/finalizers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - gi.ds.isc.ibm.com.ibm.com
+  resources:
+  - restores
+  - restores/status
+  - restores/finalizers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - redis.databases.cloud.ibm.com
+  resources:
+  - backups
+  - buckets
+  - formationlocks
+  - formations
+  - recipes
+  - recipetemplates
+  - redissentinels
+  - releases
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - db2u.databases.ibm.com
+  resources:
+  - db2uclusters
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ibmevents.ibm.com
+  resources:
+  - kafkas
+  - kafkatopics
+  - kafkausers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - certmanager.k8s.io
+  resources:
+  - certificates
+  - issuers
+  - clusterissuers
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+  - update
+  - approve
+  - sign
+  - patch
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - roles
+  - rolebindings
+  verbs:
+  - get
+  - create
+  - delete
+  - update
+  - list
+  - watch
+  - patch
+  - escalate
+  - bind
+- apiGroups:
+  - ibmevents.ibm.com
+  resources:
+  - kafkabridges
+  - kafkaconnectors
+  - kafkaconnects
+  - kafkaconnects2is
+  - kafkamirrormaker2s
+  - kafkamirrormakers
+  - kafkarebalances
+  - kafkas
+  - kafkatopics
+  - kafkausers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - mongodbcommunity.mongodb.com
+  resources:
+  - mongodbcommunity
+  - mongodbcommunity/finalizers
+  - mongodbcommunity/status
+  - mongodbcommunity/spec
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - oidc.security.ibm.com
+  resources:
+  - clients
+  - clients/status
+  - clients/finalizers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - operator.ibm.com
+  resources:
+  - operandrequests
+  - operandrequests/status
+  - operandrequests/finalizers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - security.openshift.io
+  resources:
+  - securitycontextconstraints
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/instance: ibm-guardium-insights-operator
+    app.kubernetes.io/managed-by: ibm-guardium-insights-operator
+    app.kubernetes.io/name: ibm-guardium-insights-operator
+  name: guardiuminsights-leader-election-rolebinding
+  # namespace: REPLACE_NAMESPACE
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: guardiuminsights-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: default
+  # namespace: REPLACE_NAMESPACE
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: guardiuminsights-manager-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: guardiuminsights-manager-role
+subjects:
+- kind: ServiceAccount
+  name: guardiuminsights-manager-sa
+  # namespace: REPLACE_NAMESPACE
