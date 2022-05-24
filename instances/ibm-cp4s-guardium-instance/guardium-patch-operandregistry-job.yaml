@@ -16,7 +16,7 @@ spec:
             - /bin/sh
             - -c
             - |
-              while ! oc get operandregistry common-service -n ibm-common-service > /dev/null 2>&1 ; do
+              while ! oc get operandregistry common-service -n ibm-common-services > /dev/null 2>&1 ; do
                 echo "Waiting for operandregistry common-service to be available..." 
                 sleep 30
               done
