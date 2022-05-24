@@ -16,11 +16,13 @@ spec:
             - /bin/sh
             - -c
             - |
-              while ! oc get operandregistry common-service -n > /dev/null 2>&1 ; do 
+              while ! oc get operandregistry common-service -n > /dev/null 2>&1 ; do
+                echo "Waiting for operandregistry common-service to be available..." 
                 sleep 30
               done
-              oc patch operandregistry common-service --type=json \
-                -p='[{"op":"add","path":"/spec/operators/0","value":{"channel":"v1.1","installPlanApproval":"Automatic","name":"ibm-db2u-operator","namespace":"'ibm-common-services'","packageName":"db2u-operator","scope":"public","sourceName":"ibm-db2uoperator-catalog","sourceNamespace":"openshift-marketplace"}}]' -n ibm-common-services
+              echo "Updating operandregistry common-service..."
+              oc patch operandregistry common-service -n ibm-common-services --type=json \
+                -p='[{"op":"add","path":"/spec/operators/0","value":{"channel":"v1.1","installPlanApproval":"Automatic","name":"ibm-db2u-operator","namespace":"'ibm-common-services'","packageName":"db2u-operator","scope":"public","sourceName":"ibm-db2uoperator-catalog","sourceNamespace":"openshift-marketplace"}}]'
           resources:
             requests:
               cpu: "2500m"
