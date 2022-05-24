@@ -12,7 +12,7 @@ spec:
       containers:
         - name: config
           image: quay.io/openshift/origin-cli:latest
-          command: 
+          command:
             - /bin/sh
             - -c
             - |
@@ -23,6 +23,9 @@ spec:
               echo "Updating operandregistry common-service..."
               oc patch operandregistry common-service -n ibm-common-services --type=json \
                 -p='[{"op":"add","path":"/spec/operators/0","value":{"channel":"v1.1","installPlanApproval":"Automatic","name":"ibm-db2u-operator","namespace":"'ibm-common-services'","packageName":"db2u-operator","scope":"public","sourceName":"ibm-db2uoperator-catalog","sourceNamespace":"openshift-marketplace"}}]'
+              echo "Patching scc anyuid"
+              oc patch scc anyuid \
+                -p='[{ "op": "add", "path": "/users/-", "value": "system:serviceaccount:'${namespace}':mongodb-kubernetes-operator" }]' --type=json
           resources:
             requests:
               cpu: "2500m"
