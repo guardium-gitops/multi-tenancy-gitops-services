@@ -1,2 +1,33 @@
-# Convert this to ArgoCD Pre-Sync Job
-# $kubernetesCLI patch operandregistry common-service --type=json -p='[{"op":"add","path":"/spec/operators/0","value":{"channel":"v1.1","installPlanApproval":"Automatic","name":"ibm-db2u-operator","namespace":"'$ICSNAMESPACE'","packageName":"db2u-operator","scope":"public","sourceName":"ibm-db2uoperator-catalog","sourceNamespace":"openshift-marketplace"}}]' -n $ICSNAMESPACE
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: guardium-patch-operandregistry-job-
+  namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      containers:
+        - name: config
+          image: quay.io/openshift/origin-cli:latest
+          command: 
+            - /bin/sh"
+            - -c
+            - |
+              while ! oc get operandregistry common-service -n > /dev/null 2>&1 ; do 
+                sleep 30
+              done
+              oc patch operandregistry common-service --type=json \
+                -p='[{"op":"add","path":"/spec/operators/0","value":{"channel":"v1.1","installPlanApproval":"Automatic","name":"ibm-db2u-operator","namespace":"'ibm-common-services'","packageName":"db2u-operator","scope":"public","sourceName":"ibm-db2uoperator-catalog","sourceNamespace":"openshift-marketplace"}}]' -n ibm-common-services
+          resources:
+            requests:
+              cpu: "2500m"
+              memory: "64Mi"
+            limits:
+              cpu: "2500m"
+              memory: "256Mi"
+      restartPolicy: Never
+      serviceAccountName: openshift-gitops-cntk-argocd-application-controller
+  backoffLimit: 4
