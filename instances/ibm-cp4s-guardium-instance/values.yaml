@@ -1,0 +1,8 @@
+name: guardium
+version: 3.1.5
+license: L-TESX-C86NC4
+templateSize: values-small
+domain: guardium.aws.ibm-gtmaa.dev
+db2:
+  size: 1
+  dataPvcSize: 1000
