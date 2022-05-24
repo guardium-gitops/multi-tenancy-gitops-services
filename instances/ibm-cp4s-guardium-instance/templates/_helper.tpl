@@ -75,9 +75,9 @@
 
 {{- define "guardium.db2.encrypt" -}}
   {{- if .Values.db2 -}}
-    {{- default "YES" .Values.db2.encrypt -}}
+    {{- default "YES" .Values.db2.encrypt | quote -}}
   {{- else -}}
-    "YES"
+    {{ "YES" | quote}}
   {{- end -}}
 {{- end -}}
 
