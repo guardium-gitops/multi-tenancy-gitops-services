@@ -77,7 +77,7 @@
   {{- if .Values.db2 -}}
     {{- default "YES" .Values.db2.encrypt -}}
   {{- else -}}
-    YES
+    "YES"
   {{- end -}}
 {{- end -}}
 
