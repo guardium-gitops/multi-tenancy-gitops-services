@@ -93,7 +93,7 @@
   {{- if .Values.db2 -}}
     {{- default "10Gi" .Values.db2.metaPvcSize -}}
   {{- else -}}
-    10Gi
+    1000Gi
   {{- end -}}
 {{- end -}}
 
