@@ -6,6 +6,7 @@ metadata:
   namespace: openshift-marketplace
   annotations:
     argocd.argoproj.io/sync-wave: {{ .Values.syncWave | default "-10" | quote }}
+    bedrock_catalogsource_priority: '1'
 spec:
   {{- toYaml .Values.catalogs.commonservices.catalog | nindent 2 }}
 {{- end -}}
