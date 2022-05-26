@@ -35,41 +35,41 @@
 
 {{- define "guardium.kafka.pvcSize" -}}
   {{- if .Values.kafka -}}
-    {{- default "250Gi" .Values.kafka.pvcSize -}}
+    {{- default "50Gi" .Values.kafka.pvcSize -}}
   {{- else -}}
-    250Gi
+    50Gi
   {{- end -}}
 {{- end -}}
 
 {{- define "guardium.zookeeper.pvcSize" -}}
   {{- if .Values.zookeeper -}}
-    {{- default "20Gi" .Values.zookeeper.pvcSize -}}
+    {{- default "5Gi" .Values.zookeeper.pvcSize -}}
   {{- else -}}
-    20Gi
+    5Gi
   {{- end -}}
 {{- end -}}
 
 {{- define "guardium.mongodb.dataPvcSize" -}}
   {{- if .Values.mongodb -}}
-    {{- default "250Gi" .Values.mongodb.dataPvcSize -}}
+    {{- default "50Gi" .Values.mongodb.dataPvcSize -}}
   {{- else -}}
-    250Gi
+    50Gi
   {{- end -}}
 {{- end -}}
 
 {{- define "guardium.mongodb.logsPvcSize" -}}
   {{- if .Values.mongodb -}}
-    {{- default "250Gi" .Values.mongodb.logsPvcSize -}}
+    {{- default "10Gi" .Values.mongodb.logsPvcSize -}}
   {{- else -}}
-    250Gi
+    10Gi
   {{- end -}}
 {{- end -}}
 
 {{- define "guardium.db2.size" -}}
   {{- if .Values.db2 -}}
-    {{- default "1" .Values.db2.size -}}
+    {{- default "2" .Values.db2.size -}}
   {{- else -}}
-    {{- "1" -}}
+    {{- "2" -}}
   {{- end -}}
 {{- end -}}
 
@@ -83,25 +83,25 @@
 
 {{- define "guardium.db2.logsPvcSize" -}}
   {{- if .Values.db2 -}}
-    {{- default "10Gi" .Values.db2.logsPvcSize -}}
+    {{- default "150Gi" .Values.db2.logsPvcSize -}}
   {{- else -}}
-    10Gi
+    150Gi
   {{- end -}}
 {{- end -}}
 
 {{- define "guardium.db2.metaPvcSize" -}}
   {{- if .Values.db2 -}}
-    {{- default "10Gi" .Values.db2.metaPvcSize -}}
+    {{- default "150Gi" .Values.db2.metaPvcSize -}}
   {{- else -}}
-    1000Gi
+    150Gi
   {{- end -}}
 {{- end -}}
 
 {{- define "guardium.db2.dataPvcSize" -}}
   {{- if .Values.db2 -}}
-    {{- default "5000Gi" .Values.db2.dataPvcSize -}}
+    {{- default "200Gi" .Values.db2.dataPvcSize -}}
   {{- else -}}
-    5000Gi
+    200Gi
   {{- end -}}
 {{- end -}}
 
