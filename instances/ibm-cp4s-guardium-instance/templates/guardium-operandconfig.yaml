@@ -3,7 +3,9 @@ kind: OperandConfig
 metadata:
   name: common-service
   namespace: ibm-common-services
+  annotations:
+    argocd.argoproj.io/sync-wave: "241"
 spec:
   services:
-  - name: ibm-db2u-operator
-    spec: {}
+    - name: ibm-db2u-operator
+      spec: {}

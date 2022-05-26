@@ -1,128 +1,130 @@
-# apiVersion: gi.ds.isc.ibm.com/v1
-# kind: GuardiumInsights
-# metadata:
-#   #name: This must be 10 or less characters
-#   name: {{ include "guardium.name" . }}
-# spec:
-#   version: {{ include "guardium.version" . }}
-#   license:
-#     accept: true
-#     licenseType: "{{ include "guardium.license" . }}"
-#   guardiumInsightsGlobal:
-#     dev: "false"
-#     licenseAccept: true
-#     # Guardium Insights template size can be defined as below using the size parameter
-#     size: "{{ include "guardium.templateSize" . }}"
-#     # image:
-#       #insightsPullSecret needs to be set to the following developer/QA workflow
-#       #insightsPullSecret: ibm-artifactory-key
-#       #repository needs to be set to the following developer/QA workflow
-#       #repository: sec-guardium-next-gen-docker-local.artifactory.swg-devops.com
-#     insights:
-#       ingress:
-#         hostName: insights.apps.{{ include "guardium.domain" .}}
-#         domainName: apps.{{ include "guardium.domain" .}}
-#       ics:
-#         namespace: ibm-common-services
-#         registry: common-service
-#     storageClassName: {{ include "guardium.storageClassRWX" . }}
-#   dependency-kafka:
-#     kafka:
-#       storage:
-#         type: persistent-claim
-#         size: {{ include "guardium.kafka.pvcSize" . }}
-#         class: {{ include "guardium.storageClassRWO" . }}
-#     zookeeper:
-#       storage:
-#         type: persistent-claim
-#         size: {{ include "guardium.zookeeper.pvcSize" . }}
-#         class: {{ include "guardium.storageClassRWO" . }}
-#   dependency-redis:
-#     enabled: true
-#     persistence:
-#       storageClass: {{ include "guardium.storageClassRWO" . }}
-#   dependency-mongodb:
-#     storage:
-#     - metadata:
-#         name: data-volume
-#       spec:
-#         accessModes:
-#         - ReadWriteOnce
-#         resources:
-#           requests:
-#             storage: {{ include "guardium.mongodb.dataPvcSize" . }}
-#         storageClassName: {{ include "guardium.storageClassRWO" . }}
-#     - metadata:
-#         name: logs-volume
-#       spec:
-#         accessModes:
-#         - ReadWriteOnce
-#         resources:
-#           requests:
-#             storage: {{ include "guardium.mongodb.logsPvcSize" . }}
-#         storageClassName: {{ include "guardium.storageClassRWX" . }}
-#   dependency-db2:
-#     db2:
-#       size: {{ include "guardium.db2.size" . }}
-#       resources:
-#         requests:
-#           cpu: "6"
-#           memory: "48Gi"
-#         limits:
-#           cpu: "6"
-#           memory: "48Gi"
-#       dbSettings:
-#         encrypt: {{ include "guardium.db2.encrypt" . }}
-#       storage:
-#       - name: meta
-#         spec:
-#           storageClassName: {{ include "guardium.storageClassRWX" . }}
-#           accessModes:
-#           - ReadWriteMany
-#           resources:
-#             requests:
-#               storage: {{ include "guardium.db2.metaPvcSize" . }}
-#         type: create
-#       - name: data
-#         spec:
-#           storageClassName: {{ include "guardium.storageClassRWO" . }}
-#           accessModes:
-#           - ReadWriteOnce
-#           resources:
-#             requests:
-#               storage: {{ include "guardium.db2.dataPvcSize" . }}
-#         type: template
-#       - name: activelogs
-#         spec:
-#           accessModes:
-#           - ReadWriteOnce
-#           storageClassName: {{ include "guardium.storageClassRWO" . }}
-#           resources:
-#             requests:
-#               storage: {{ include "guardium.db2.logsPvcSize" . }}
-#     mln:
-#       distribution: 0:0
-#       total: {{ include "guardium.db2.size" . }}
-#   mini-snif:
-#     resources:
-#       limits:
-#         cpu: 10
-#         memory: 16Gi
-#       requests:
-#         cpu: "100m"
-#         memory: "100Mi"
-#     persistentVolumesClaims:
-#       mini-snif-shared:
-#         storageClassName: {{ include "guardium.storageClassRWX" . }}
-#   universal-connector-manager:
-#     persistentVolumesClaims:
-#       universal-connector-manager-shared:
-#         storageClassName: {{ include "guardium.storageClassRWX" . }}
-#   settings-datasources:
-#     persistentVolumesClaims:
-#       settings-datasources:
-#         storageClassName: {{ include "guardium.storageClassRWX" . }}
-#   ticketing:
-#     persistentVolumesClaims:
-#       ticketing-keystore:
-#         storageClassName: {{ include "guardium.storageClassRWX" . }}
+apiVersion: gi.ds.isc.ibm.com/v1
+kind: GuardiumInsights
+metadata:
+  #name: This must be 10 or less characters
+  name: {{ include "guardium.name" . }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "245"
+spec:
+  version: {{ include "guardium.version" . }}
+  license:
+    accept: true
+    licenseType: "{{ include "guardium.license" . }}"
+  guardiumInsightsGlobal:
+    dev: "false"
+    licenseAccept: true
+    # Guardium Insights template size can be defined as below using the size parameter
+    size: "{{ include "guardium.templateSize" . }}"
+    # image:
+      #insightsPullSecret needs to be set to the following developer/QA workflow
+      #insightsPullSecret: ibm-artifactory-key
+      #repository needs to be set to the following developer/QA workflow
+      #repository: sec-guardium-next-gen-docker-local.artifactory.swg-devops.com
+    insights:
+      ingress:
+        hostName: insights.apps.{{ include "guardium.domain" .}}
+        domainName: apps.{{ include "guardium.domain" .}}
+      ics:
+        namespace: ibm-common-services
+        registry: common-service
+    storageClassName: {{ include "guardium.storageClassRWX" . }}
+  dependency-kafka:
+    kafka:
+      storage:
+        type: persistent-claim
+        size: {{ include "guardium.kafka.pvcSize" . }}
+        class: {{ include "guardium.storageClassRWO" . }}
+    zookeeper:
+      storage:
+        type: persistent-claim
+        size: {{ include "guardium.zookeeper.pvcSize" . }}
+        class: {{ include "guardium.storageClassRWO" . }}
+  dependency-redis:
+    enabled: true
+    persistence:
+      storageClass: {{ include "guardium.storageClassRWO" . }}
+  dependency-mongodb:
+    storage:
+    - metadata:
+        name: data-volume
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ include "guardium.mongodb.dataPvcSize" . }}
+        storageClassName: {{ include "guardium.storageClassRWO" . }}
+    - metadata:
+        name: logs-volume
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ include "guardium.mongodb.logsPvcSize" . }}
+        storageClassName: {{ include "guardium.storageClassRWX" . }}
+  dependency-db2:
+    db2:
+      size: {{ include "guardium.db2.size" . }}
+      resources:
+        requests:
+          cpu: "6"
+          memory: "48Gi"
+        limits:
+          cpu: "6"
+          memory: "48Gi"
+      dbSettings:
+        encrypt: {{ include "guardium.db2.encrypt" . }}
+      storage:
+      - name: meta
+        spec:
+          storageClassName: {{ include "guardium.storageClassRWX" . }}
+          accessModes:
+          - ReadWriteMany
+          resources:
+            requests:
+              storage: {{ include "guardium.db2.metaPvcSize" . }}
+        type: create
+      - name: data
+        spec:
+          storageClassName: {{ include "guardium.storageClassRWO" . }}
+          accessModes:
+          - ReadWriteOnce
+          resources:
+            requests:
+              storage: {{ include "guardium.db2.dataPvcSize" . }}
+        type: template
+      - name: activelogs
+        spec:
+          accessModes:
+          - ReadWriteOnce
+          storageClassName: {{ include "guardium.storageClassRWO" . }}
+          resources:
+            requests:
+              storage: {{ include "guardium.db2.logsPvcSize" . }}
+    mln:
+      distribution: 0:0
+      total: {{ include "guardium.db2.size" . }}
+  mini-snif:
+    resources:
+      limits:
+        cpu: 10
+        memory: 16Gi
+      requests:
+        cpu: "100m"
+        memory: "100Mi"
+    persistentVolumesClaims:
+      mini-snif-shared:
+        storageClassName: {{ include "guardium.storageClassRWX" . }}
+  universal-connector-manager:
+    persistentVolumesClaims:
+      universal-connector-manager-shared:
+        storageClassName: {{ include "guardium.storageClassRWX" . }}
+  settings-datasources:
+    persistentVolumesClaims:
+      settings-datasources:
+        storageClassName: {{ include "guardium.storageClassRWX" . }}
+  ticketing:
+    persistentVolumesClaims:
+      ticketing-keystore:
+        storageClassName: {{ include "guardium.storageClassRWX" . }}
