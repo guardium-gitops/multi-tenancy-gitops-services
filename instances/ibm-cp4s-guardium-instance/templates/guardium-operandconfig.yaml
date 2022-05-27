@@ -1,11 +1,11 @@
-apiVersion: operator.ibm.com/v1alpha1
-kind: OperandConfig
-metadata:
-  name: common-service
-  namespace: ibm-common-services
-  annotations:
-    argocd.argoproj.io/sync-wave: "241"
-spec:
-  services:
-    - name: ibm-db2u-operator
-      spec: {}
+# apiVersion: operator.ibm.com/v1alpha1
+# kind: OperandConfig
+# metadata:
+#   name: common-service
+#   namespace: ibm-common-services
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "241"
+# spec:
+#   services:
+#     - name: ibm-db2u-operator
+#       spec: {}
